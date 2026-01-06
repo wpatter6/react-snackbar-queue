@@ -1,10 +1,23 @@
-# react-tailwind-snackbar-queue
+# react-snackbar-queue
 
-Zero-dependency, fully configurable Snackbar queue provider using React and TailwindCSS, written in Typescript
+#### A zero-dependency, fully configurable Snackbar queue provider using React, written in Typescript
+
+---
+
+[![NPM](https://nodei.co/npm/react-snackbar-queue.svg)](https://www.npmjs.com/package/react-snackbar-queue/)
+
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+[![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
 ---
 
 ## Get started:
+
+Install:
+
+```bash
+npm i react-snackbar-queue
+```
 
 In your app.tsx (or wherever your context providers are added)
 
