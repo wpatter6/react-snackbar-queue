@@ -1,6 +1,6 @@
 {
   "name": "react-snackbar-queue",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Zero-dependency, fully configurable Snackbar queue provider using React, written in Typescript.",
   "homepage": "https://github.com/wpatter6/react-snackbar-queue#readme",
   "bugs": {
@@ -21,14 +21,15 @@
   "author": "wpatter6",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "ncc build ./src/index.ts -o dist/"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vercel/ncc": "^0.38.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
