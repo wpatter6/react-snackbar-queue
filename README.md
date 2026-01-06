@@ -2,8 +2,6 @@
 
 #### A zero-dependency, fully configurable Snackbar queue provider using React, written in Typescript
 
----
-
 [![NPM](https://nodei.co/npm/react-snackbar-queue.svg)](https://www.npmjs.com/package/react-snackbar-queue/)
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -40,6 +38,10 @@ export default function MyComponent() {
   );
 }
 ```
+
+---
+
+## Configuration
 
 There are various options that can be passed as the second parameter to the `enqueueSnackbar` function to affect the individual snackbar functionality. This options object is defined below:
 
