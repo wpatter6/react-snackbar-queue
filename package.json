@@ -1,19 +1,17 @@
 {
-  "name": "react-tailwind-snackbar-queue",
+  "name": "react-snackbar-queue",
   "version": "1.1.0",
-  "description": "Zero-dependency, fully configurable Snackbar queue provider using React and TailwindCSS, written in Typescript.",
-  "homepage": "https://github.com/wpatter6/react-tailwind-snackbar-queue#readme",
+  "description": "Zero-dependency, fully configurable Snackbar queue provider using React, written in Typescript.",
+  "homepage": "https://github.com/wpatter6/react-snackbar-queue#readme",
   "bugs": {
-    "url": "https://github.com/wpatter6/react-tailwind-snackbar-queue/issues"
+    "url": "https://github.com/wpatter6/react-snackbar-queue/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wpatter6/react-tailwind-snackbar-queue.git"
+    "url": "git+https://github.com/wpatter6/react-snackbar-queue.git"
   },
   "keywords": [
     "react",
-    "tailwind",
-    "TailwindCSS",
     "snackbar",
     "toast",
     "notification",
@@ -30,12 +28,10 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "tailwindcss": "^4.0.6"
+    "@types/react-dom": "^19.2.0"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "tailwindcss": "*"
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   }
 }

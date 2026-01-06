@@ -6,7 +6,6 @@
     },
     "target": "esnext",
     "moduleResolution": "node",
-    "module": "commonjs",
     "jsx": "react",
     "lib": ["es2016", "dom", "es5"],
     "declaration": true,

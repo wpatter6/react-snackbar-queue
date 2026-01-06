@@ -6,6 +6,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import { styles } from "./styles";
 
 // #region Types
 type SnackbarSeverity = "default" | "success" | "error" | "info" | "warning";
@@ -56,6 +57,7 @@ export const useSnackbar = () => useContext(SnackbarContext);
 // #endregion
 
 // #region Defaults and constants
+const CLASS_PREFIX = "rtsq-aoz89d";
 const DEFAULT_SNACKBAR_DURATION = 5000;
 const DEFAULT_ANIMATION_DURATION = 300;
 const DEFAULT_MAX_SNACKBARS = 2;
@@ -68,22 +70,16 @@ const DEFAULT_SNACKBAR_COLORS: Record<SnackbarSeverity, string> = {
   warning: "#b96f00",
 };
 
-const SNACKBAR_POSITION_CLASSES: Record<SnackbarPosition, string> = {
-  "top-left": "top-4 left-4 items-start",
-  "top-right": "top-4 right-4 items-end",
-  "bottom-left": "bottom-4 left-4 items-start",
-  "bottom-right": "bottom-4 right-4 items-end",
-  "top-center": "top-4 left-1/2 transform -translate-x-1/2 items-center",
-  "bottom-center": "bottom-4 left-1/2 transform -translate-x-1/2 items-center",
-};
-
-const SNACKBAR_POSITION_TRANSLATE_CLASSES: Record<SnackbarPosition, string> = {
-  "top-left": "-translate-x-480 translate-y-0",
-  "top-right": "translate-x-480 translate-y-0",
-  "bottom-left": "-translate-x-480 translate-y-0",
-  "bottom-right": "translate-x-480 translate-y-0",
-  "top-center": "translate-x-0 -translate-y-480",
-  "bottom-center": "translate-x-0 translate-y-480",
+const SNACKBAR_POSITION_TRANSLATE_VALUES: Record<
+  SnackbarPosition,
+  Record<"translateX" | "translateY", string>
+> = {
+  "top-left": { translateX: "-480px", translateY: "0px" },
+  "top-right": { translateX: "480px", translateY: "0px" },
+  "bottom-left": { translateX: "-480px", translateY: "0px" },
+  "bottom-right": { translateX: "480px", translateY: "0px" },
+  "top-center": { translateX: "0px", translateY: "-480px" },
+  "bottom-center": { translateX: "0px", translateY: "480px" },
 };
 
 const DEFAULT_CLOSE_ICON_SVG = (
@@ -113,7 +109,6 @@ type SnackbarItemProps = {
   severity?: SnackbarSeverity;
   index: number;
   className?: string;
-  colors?: Partial<Record<SnackbarSeverity, string>>;
   buttons?: ReactNode[];
   noCloseButton?: boolean;
   closeIcon?: ReactNode;
@@ -127,7 +122,6 @@ function SnackbarItem({
   hide,
   index,
   className,
-  colors,
   severity,
   animationDuration,
   closeIcon,
@@ -137,34 +131,29 @@ function SnackbarItem({
 }: SnackbarItemProps) {
   const [isInit, setIsInit] = useState(false);
   const classes = [
+    `${CLASS_PREFIX}-i`,
+    `${CLASS_PREFIX}-i-${severity ?? "default"}`,
     className,
-    "cursor-default",
-    "text-white",
-    "p-4",
-    "rounded-md",
-    "flex",
-    "justify-between",
-    "items-center",
-    "w-96",
-    "max-w-full",
-    "shadow-lg",
-    "pointer-events-auto",
-    "transition-transform",
-    `duration-${animationDuration ?? DEFAULT_ANIMATION_DURATION}`,
-    hide || !isInit
-      ? SNACKBAR_POSITION_TRANSLATE_CLASSES[position ?? DEFAULT_POSITION]
-      : `translate-0`,
-    `z-index-${100 + index}`,
   ].filter(Boolean) as string[];
 
   const styleMemo = useMemo(
     () => ({
-      backgroundColor:
-        colors?.[severity ?? "default"] ??
-        DEFAULT_SNACKBAR_COLORS[severity ?? "default"],
-      animationDuration: `${animationDuration ?? DEFAULT_ANIMATION_DURATION}ms`,
+      zIndex: 100 + index,
+      ...(hide || !isInit
+        ? {
+            transform: `translate(${
+              SNACKBAR_POSITION_TRANSLATE_VALUES[position ?? DEFAULT_POSITION]
+                .translateX
+            }, ${
+              SNACKBAR_POSITION_TRANSLATE_VALUES[position ?? DEFAULT_POSITION]
+                .translateY
+            })`,
+          }
+        : {
+            transform: `translate(0px, 0px)`,
+          }),
     }),
-    [colors, severity, animationDuration]
+    [severity, animationDuration, isInit, hide, index, position]
   );
 
   useEffect(() => {
@@ -180,7 +169,7 @@ function SnackbarItem({
       >
         {message}
       </span>
-      <div className="ml-4 flex gap-3">
+      <div className={`${CLASS_PREFIX}-i-buttons`}>
         {buttons}
         {!noCloseButton && <button onClick={onClose}>{closeIcon}</button>}
       </div>
@@ -260,15 +249,33 @@ export function SnackbarProvider({
     };
   }, [hiddenIds, snackbars, maxSnackbars, snackbarDuration]);
 
+  useEffect(() => {
+    const id = `${CLASS_PREFIX}-style`;
+    const existing = document.getElementById(id);
+    if (existing) {
+      // remove existing to update
+      existing.remove();
+    }
+    const styleEl = document.createElement("style");
+    styleEl.id = id;
+    styleEl.innerHTML = styles(CLASS_PREFIX, {
+      animationDuration: animationDuration || DEFAULT_ANIMATION_DURATION,
+      colors: { ...DEFAULT_SNACKBAR_COLORS, ...colors },
+    });
+    document.head.prepend(styleEl);
+  }, [animationDuration, colors]);
+
   return (
     <SnackbarContext.Provider value={providerValue}>
       {children}
       <div
-        className={
-          (classes?.container ||
-            `fixed flex flex-col gap-2 z-50 h-auto min-h-24 pointer-events-none `) +
-          SNACKBAR_POSITION_CLASSES[position]
-        }
+        className={[
+          `${CLASS_PREFIX}-c-${position}`,
+          `${CLASS_PREFIX}-c`,
+          classes?.container || "",
+        ]
+          .join(" ")
+          .trim()}
       >
         {snackbars.map((snackbar, index) => (
           <SnackbarItem
@@ -279,7 +286,6 @@ export function SnackbarProvider({
             hide={hiddenIds.has(snackbar.id)}
             onClose={() => providerValue.hideSnackbar(snackbar.id)}
             className={classes?.snackbar}
-            colors={colors}
             animationDuration={animationDuration}
             buttons={snackbar.buttons}
             noCloseButton={noCloseButton || snackbar.noCloseButton}
@@ -289,7 +295,7 @@ export function SnackbarProvider({
         ))}
       </div>
       {/* Announce latest message to screen readers */}
-      <div className="invisible h-0 w-0 overflow-hidden" aria-live="polite">
+      <div className={`${CLASS_PREFIX}-aria`} aria-live="polite">
         {snackbars[0]?.message || ""}
       </div>
     </SnackbarContext.Provider>
