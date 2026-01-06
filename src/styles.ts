@@ -6,7 +6,8 @@ type StylesOptions = {
 export const styles = (
   prefix: string,
   { animationDuration, colors }: StylesOptions
-) => `
+) =>
+  `
   .${prefix}-c {
     position: fixed;
     display: flex;
@@ -85,4 +86,6 @@ export const styles = (
   `
     )
     .join("")}
-`;
+`
+    .replace(/\s/g, "")
+    .replace(/\n/g, "");

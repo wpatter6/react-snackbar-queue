@@ -276,6 +276,7 @@ export function SnackbarProvider({
         ]
           .join(" ")
           .trim()}
+        aria-hidden="true"
       >
         {snackbars.map((snackbar, index) => (
           <SnackbarItem
