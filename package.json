@@ -1,6 +1,6 @@
 {
   "name": "react-snackbar-queue",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Zero-dependency, fully configurable Snackbar queue provider using React, written in Typescript.",
   "homepage": "https://github.com/wpatter6/react-snackbar-queue#readme",
   "bugs": {
