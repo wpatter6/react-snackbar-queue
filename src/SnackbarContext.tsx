@@ -315,8 +315,7 @@ type StylesOptions = {
 };
 
 const styles = (prefix: string, { animationDuration, colors }: StylesOptions) =>
-  `
-  .${prefix}-c {
+  `.${prefix}-c {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -331,7 +330,6 @@ const styles = (prefix: string, { animationDuration, colors }: StylesOptions) =>
     left: 1rem;
     align-items: flex-start;
   }
-  
   .${prefix}-c-top-right {
     top: 1rem;
     right: 1rem;
@@ -364,7 +362,7 @@ const styles = (prefix: string, { animationDuration, colors }: StylesOptions) =>
     justify-content: space-between;
     align-items: center;
     width: 24rem;
-    max-width: 100%;
+    max-width: calc(100vw - 2rem);
     padding: 1rem;
     border-radius: 0.375rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -393,8 +391,5 @@ const styles = (prefix: string, { animationDuration, colors }: StylesOptions) =>
     }
   `
     )
-    .join("")}
-`
-    .replace(/\s/g, "")
-    .replace(/\n/g, "");
+    .join("")}`.replace(/\n\s*/g, "");
 // #endregion
