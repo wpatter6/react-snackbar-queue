@@ -6,6 +6,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 // #region Types
 export type SnackbarSeverity =
@@ -40,7 +41,7 @@ export type SnackbarContextType = {
 
 export type EnqueueSnackbarType = (
   message: ReactNode,
-  options?: EnqueueSnackbarOptions
+  options?: EnqueueSnackbarOptions,
 ) => number;
 
 export type SnackbarObject = {
@@ -55,7 +56,7 @@ const DEFAULT_SNACKBAR_CONTEXT = {
   hideSnackbar: async () => {},
 };
 const SnackbarContext = createContext<SnackbarContextType>(
-  DEFAULT_SNACKBAR_CONTEXT
+  DEFAULT_SNACKBAR_CONTEXT,
 );
 export const useSnackbar = () => useContext(SnackbarContext);
 // #endregion
@@ -142,7 +143,6 @@ function SnackbarItem({
 
   const styleMemo = useMemo(
     () => ({
-      zIndex: 100 + index,
       ...(hide || !isInit
         ? {
             transform: `translate(${
@@ -157,7 +157,7 @@ function SnackbarItem({
             transform: `translate(0px, 0px)`,
           }),
     }),
-    [severity, animationDuration, isInit, hide, index, position]
+    [severity, animationDuration, isInit, hide, index, position],
   );
 
   useEffect(() => {
@@ -206,6 +206,7 @@ export function SnackbarProvider({
   maxSnackbars = DEFAULT_MAX_SNACKBARS,
   position = DEFAULT_POSITION,
 }: SnackbarProviderProps) {
+  const [isClient, setIsClient] = useState(false);
   const [snackbars, setSnackbars] = useState<Array<SnackbarObject>>([]);
   const [hiddenIds, setHiddenIds] = useState<Set<number>>(new Set());
 
@@ -220,7 +221,7 @@ export function SnackbarProvider({
 
       // wait for animation to remove, -1 to prevent flashing
       await new Promise((resolve) =>
-        setTimeout(resolve, animationDuration - 1)
+        setTimeout(resolve, animationDuration - 1),
       );
 
       setSnackbars((prev) => prev.filter((snackbar) => snackbar.id !== id));
@@ -243,10 +244,13 @@ export function SnackbarProvider({
           message,
         };
         setSnackbars((prev) => [...prev.slice(-maxSnackbars + 1), sb]);
-        setTimeout(() => {
-          // must pass the sb object because hideSnackbar function is stale in this closure
-          hideSnackbar(id, sb);
-        }, options?.duration || snackbarDuration || DEFAULT_SNACKBAR_DURATION);
+        setTimeout(
+          () => {
+            // must pass the sb object because hideSnackbar function is stale in this closure
+            hideSnackbar(id, sb);
+          },
+          options?.duration || snackbarDuration || DEFAULT_SNACKBAR_DURATION,
+        );
         return id;
       },
       hideSnackbar,
@@ -254,6 +258,7 @@ export function SnackbarProvider({
   }, [hiddenIds, snackbars, maxSnackbars, snackbarDuration]);
 
   useEffect(() => {
+    setIsClient(true);
     const id = `${CLASS_PREFIX}-style`;
     const existing = document.getElementById(id);
     if (existing) {
@@ -272,37 +277,44 @@ export function SnackbarProvider({
   return (
     <SnackbarContext.Provider value={providerValue}>
       {children}
-      <div
-        className={[
-          `${CLASS_PREFIX}-c-${position}`,
-          `${CLASS_PREFIX}-c`,
-          classes?.container || "",
-        ]
-          .join(" ")
-          .trim()}
-        aria-hidden="true"
-      >
-        {snackbars.map((snackbar, index) => (
-          <SnackbarItem
-            key={snackbar.id}
-            index={index}
-            message={snackbar.message}
-            severity={snackbar.severity}
-            hide={hiddenIds.has(snackbar.id)}
-            onClose={() => providerValue.hideSnackbar(snackbar.id)}
-            className={classes?.snackbar}
-            animationDuration={animationDuration}
-            buttons={snackbar.buttons}
-            noCloseButton={noCloseButton || snackbar.noCloseButton}
-            closeIcon={closeIcon}
-            position={position}
-          />
-        ))}
-      </div>
-      {/* Announce latest message to screen readers */}
-      <div className={`${CLASS_PREFIX}-aria`} aria-live="polite">
-        {snackbars[0]?.message || ""}
-      </div>
+      {!isClient
+        ? null
+        : createPortal(
+            <>
+              <div
+                className={[
+                  `${CLASS_PREFIX}-c-${position}`,
+                  `${CLASS_PREFIX}-c`,
+                  classes?.container || "",
+                ]
+                  .join(" ")
+                  .trim()}
+                aria-hidden="true"
+              >
+                {snackbars.map((snackbar, index) => (
+                  <SnackbarItem
+                    key={snackbar.id}
+                    index={index}
+                    message={snackbar.message}
+                    severity={snackbar.severity}
+                    hide={hiddenIds.has(snackbar.id)}
+                    onClose={() => providerValue.hideSnackbar(snackbar.id)}
+                    className={classes?.snackbar}
+                    animationDuration={animationDuration}
+                    buttons={snackbar.buttons}
+                    noCloseButton={noCloseButton || snackbar.noCloseButton}
+                    closeIcon={closeIcon}
+                    position={position}
+                  />
+                ))}
+              </div>
+              {/* Announce latest message to screen readers */}
+              <div className={`${CLASS_PREFIX}-aria`} aria-live="polite">
+                {snackbars[0]?.message || ""}
+              </div>
+            </>,
+            document.body,
+          )}
     </SnackbarContext.Provider>
   );
 }
@@ -389,7 +401,7 @@ const styles = (prefix: string, { animationDuration, colors }: StylesOptions) =>
     .${prefix}-i-${key} {
       background-color: ${value};
     }
-  `
+  `,
     )
     .join("")}`.replace(/\n\s*/g, "");
 // #endregion
