@@ -93,3 +93,9 @@ type SnackbarPosition =
 ## Advanced usage:
 
 Snackbars can also be hidden programmatically. The `useSnackbar` hook also returns a `hideSnackbar` function. The `enqueueSnackbar` function returns the ID for the snackbar that was shown which can be passed into the `hideSnackbar` function to hide it programmatically.
+
+---
+
+## Publishing
+
+set url in .npmrc
